@@ -1,5 +1,7 @@
 package com.example.springbootmall.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.springbootmall.constant.ProductCategory;
 import com.example.springbootmall.dto.ProductRequest;
 import com.example.springbootmall.model.Product;
 import com.example.springbootmall.service.ProductService;
@@ -21,6 +25,16 @@ import com.example.springbootmall.service.ProductService;
 public class ProductController {
 	@Autowired
 	private ProductService productService;	
+	
+	@GetMapping("/products")//在restful表示查詢商品列表
+	//category是從url中取得的參數 前端透過這個值指定想要查看哪個分類的商品 springboot會自動把字串轉成ProductCategory這個enum
+	public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) ProductCategory category,@RequestParam(required = false)String search){
+		List<Product> list=productService.getProducts(category,search);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(list);
+		
+	}
+	
 	@GetMapping("/products/{productId}")
 	public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
 		Product product=productService.getProductById(productId);
