@@ -16,11 +16,8 @@ public class ProductRowMapper implements RowMapper<Product>{
 		product.setProductId(rs.getInt("product_id"));
 		product.setProductName(rs.getString("product_name"));
 		
-		System.out.println("dfbdfs");
 		String categoryStr=rs.getString("category"); 
-		System.out.println("categoryStr:"+categoryStr);
 		ProductCategory category=ProductCategory.valueOf(categoryStr);
-		System.out.println("category:"+category);
 		product.setCategory(category);
 		
 		product.setImageUrl(rs.getString("image_url"));
