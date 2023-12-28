@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.springbootmall.constant.ProductCategory;
+import com.example.springbootmall.dto.ProductQueryParams;
 import com.example.springbootmall.dto.ProductRequest;
 import com.example.springbootmall.model.Product;
 import com.example.springbootmall.service.ProductService;
@@ -26,11 +27,31 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;	
 	
-	@GetMapping("/products")//在restful表示查詢商品列表
-	//category是從url中取得的參數 前端透過這個值指定想要查看哪個分類的商品 springboot會自動把字串轉成ProductCategory這個enum
-	public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) ProductCategory category,@RequestParam(required = false)String search){
-		List<Product> list=productService.getProducts(category,search);
+//	@GetMapping("/products")//在restful表示查詢商品列表
+//	//category是從url中取得的參數 前端透過這個值指定想要查看哪個分類的商品 springboot會自動把字串轉成ProductCategory這個enum
+//	public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) ProductCategory category,@RequestParam(required = false)String search){
+//		List<Product> list=productService.getProducts(category,search);
+//		
+//		return ResponseEntity.status(HttpStatus.OK).body(list);
+//		
+//	}
+	
+	@GetMapping("/products")
+	public ResponseEntity<List<Product>> getProducts(
+			//查詢條件filtering
+			@RequestParam(required = false) ProductCategory category,
+			@RequestParam(required = false)String search,
+			//排序sorting
+			@RequestParam(defaultValue = "created_date")String orderBy,
+			@RequestParam(defaultValue = "desc")String sort
+			){
 		
+		ProductQueryParams productQueryParams=new ProductQueryParams();
+		productQueryParams.setCategory(category);
+		productQueryParams.setSearch(search);
+		productQueryParams.setOrderBy(orderBy);
+		productQueryParams.setSort(sort);
+		List<Product> list=productService.getProducts(productQueryParams);
 		return ResponseEntity.status(HttpStatus.OK).body(list);
 		
 	}

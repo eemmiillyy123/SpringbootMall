@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.springbootmall.constant.ProductCategory;
 import com.example.springbootmall.dao.ProductDao;
+import com.example.springbootmall.dto.ProductQueryParams;
 import com.example.springbootmall.dto.ProductRequest;
 import com.example.springbootmall.model.Product;
 import com.example.springbootmall.service.ProductService;
@@ -16,9 +17,14 @@ public class ProductServiceImpl implements ProductService{
 	@Autowired
 	private ProductDao productDao;
 	
+//	@Override
+//	public List<Product> getProducts(ProductCategory category,String search) {
+//		return productDao.getProducts(category,search);
+//	}
+	
 	@Override
-	public List<Product> getProducts(ProductCategory category,String search) {
-		return productDao.getProducts(category,search);
+	public List<Product> getProducts(ProductQueryParams productQueryParams) {
+		return productDao.getProducts(productQueryParams);
 	}
 	
 	@Override
@@ -39,6 +45,7 @@ public class ProductServiceImpl implements ProductService{
 		productDao.deleteProductById(productId);
 		
 	}
+	
 	
 
 }

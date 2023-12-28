@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.springbootmall.constant.ProductCategory;
 import com.example.springbootmall.dao.ProductDao;
+import com.example.springbootmall.dto.ProductQueryParams;
 import com.example.springbootmall.dto.ProductRequest;
 import com.example.springbootmall.model.Product;
 import com.example.springbootmall.rowMapper.ProductRowMapper;
@@ -25,18 +26,36 @@ public class ProductDaoImpl implements ProductDao{
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	
 	
+//	@Override
+//	public List<Product> getProducts(ProductCategory category,String search) {
+//		String sql="select product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date from product where 1=1";
+//		Map<String,Object> map=new HashMap<>();
+//		if(category!=null) {
+//			sql=sql+" and category=:category";
+//			map.put("category", category.name());
+//		}
+//		if(search!=null) {
+//			sql=sql+" and product_name LIKE :search";
+//			map.put("search", "%"+search+"%");
+//		}
+//		List<Product> productList=namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+//		return productList;
+//	}
+	
 	@Override
-	public List<Product> getProducts(ProductCategory category,String search) {
+	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		String sql="select product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date from product where 1=1";
 		Map<String,Object> map=new HashMap<>();
-		if(category!=null) {
+		if(productQueryParams.getCategory()!=null) {
 			sql=sql+" and category=:category";
-			map.put("category", category.name());
+			map.put("category", productQueryParams.getCategory().name());
 		}
-		if(search!=null) {
+		if(productQueryParams.getSearch()!=null) {
 			sql=sql+" and product_name LIKE :search";
-			map.put("search", "%"+search+"%");
+			map.put("search", "%"+productQueryParams.getSearch()+"%");
 		}
+		sql=sql+" order by "+productQueryParams.getOrderBy()+" "+productQueryParams.getSort();
+		System.out.println("sql:"+sql);
 		List<Product> productList=namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 		return productList;
 	}
