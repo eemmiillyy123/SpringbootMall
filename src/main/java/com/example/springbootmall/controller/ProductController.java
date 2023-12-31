@@ -3,10 +3,13 @@ package com.example.springbootmall.controller;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +24,8 @@ import com.example.springbootmall.dto.ProductQueryParams;
 import com.example.springbootmall.dto.ProductRequest;
 import com.example.springbootmall.model.Product;
 import com.example.springbootmall.service.ProductService;
-
+import com.example.springbootmall.util.Page;
+@Validated
 @RestController
 public class ProductController {
 	@Autowired
@@ -37,22 +41,36 @@ public class ProductController {
 //	}
 	
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getProducts(
+	public ResponseEntity<Page<Product>> getProducts(
 			//查詢條件filtering
 			@RequestParam(required = false) ProductCategory category,
 			@RequestParam(required = false)String search,
 			//排序sorting
 			@RequestParam(defaultValue = "created_date")String orderBy,
-			@RequestParam(defaultValue = "desc")String sort
+			@RequestParam(defaultValue = "desc")String sort,
+			//分頁pagination
+			@RequestParam (defaultValue="5") @Max(1000) @Min(0)Integer limit,
+			@RequestParam (defaultValue="0") @Min(0) Integer offset
 			){
-		
 		ProductQueryParams productQueryParams=new ProductQueryParams();
 		productQueryParams.setCategory(category);
 		productQueryParams.setSearch(search);
 		productQueryParams.setOrderBy(orderBy);
 		productQueryParams.setSort(sort);
+		productQueryParams.setLimit(limit);
+		productQueryParams.setOffset(offset);
+		//取得product list
 		List<Product> list=productService.getProducts(productQueryParams);
-		return ResponseEntity.status(HttpStatus.OK).body(list);
+		//取得product總數
+		Integer total=productService.countProduct(productQueryParams);
+		//分頁	
+		Page<Product> page=new Page();
+		page.setLimit(limit);
+		page.setOffset(offset);
+		page.setTotal(total);
+		page.setResults(list);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(page);
 		
 	}
 	

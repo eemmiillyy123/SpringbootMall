@@ -12,6 +12,8 @@ import com.example.springbootmall.model.Product;
 public interface ProductService {
 //	List<Product> getProducts(ProductCategory category, String search);
 	
+	Integer countProduct(ProductQueryParams productQueryParams);
+	
 	List<Product> getProducts(ProductQueryParams productQueryParams);
 	
 	Product getProductById(Integer productId);
@@ -21,6 +23,8 @@ public interface ProductService {
 	void updateProduct(Integer productId, ProductRequest productRequest);
 
 	void deleteProduct(Integer productId);
+
+	
 
 	
 

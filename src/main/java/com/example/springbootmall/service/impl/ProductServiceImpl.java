@@ -23,6 +23,12 @@ public class ProductServiceImpl implements ProductService{
 //	}
 	
 	@Override
+	public Integer countProduct(ProductQueryParams productQueryParams) {
+		// TODO Auto-generated method stub
+		return productDao.countProduct(productQueryParams);
+	}
+	
+	@Override
 	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		return productDao.getProducts(productQueryParams);
 	}
@@ -45,6 +51,8 @@ public class ProductServiceImpl implements ProductService{
 		productDao.deleteProductById(productId);
 		
 	}
+
+	
 	
 	
 
