@@ -13,6 +13,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.example.springbootmall.dao.OrderDao;
+import com.example.springbootmall.dto.OrderQueryParams;
+import com.example.springbootmall.dto.ProductQueryParams;
 import com.example.springbootmall.model.Order;
 import com.example.springbootmall.model.OrderItem;
 import com.example.springbootmall.rowMapper.OrderItemRowMapper;
@@ -97,5 +99,39 @@ public class OrderDaoImpl implements OrderDao{
 		List<OrderItem> orderItemList=namedParameterJdbcTemplate.query(sql, map,new OrderItemRowMapper());
 		return orderItemList;
 	}
+
+	@Override
+	public Integer countOrder(OrderQueryParams orderQueryParams) {
+		String sql="select count(*) from `order` where 1=1";
+		Map<String,Object> map=new HashMap<>();
+		sql=addFilteringSql(sql, map, orderQueryParams);
+		Integer total=namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+		return total;
+	}
+
+	@Override
+	public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+		String sql="select order_id,user_id,total_amount,created_date,last_modified_date from `order` where 1=1";
+		Map<String,Object> map=new HashMap<>();
+		//查詢條件
+		sql=addFilteringSql(sql, map, orderQueryParams);
+		//排序
+		//希望新的訂單排在最前面 不希望讓前端去改變訂單的排序紀錄
+		sql=sql+" order by created_date desc";
+		//分頁
+		sql=sql+" limit :limit offset :offset";
+		map.put("limit", orderQueryParams.getLimit());
+		map.put("offset", orderQueryParams.getOffset());
+		List<Order> orderList=namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+		return orderList;
+	}
+	private  String addFilteringSql(String sql,Map<String,Object> map,OrderQueryParams orderQueryParams) {
+		if(orderQueryParams.getUserId()!=null) {
+			sql=sql+" and user_id=:userId";
+			map.put("userId", orderQueryParams.getUserId());
+		}
+		return sql;
+	}
+
 	
 }
